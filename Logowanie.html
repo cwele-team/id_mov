@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie WFO</title>
+    <meta name="description" content="Zaloguj się do swojego konta WFO, aby uzyskać dostęp do filmów archiwalnych">
+    <link rel="stylesheet" href="style.css?v=<?= filemtime('styles.css') ?>">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Ukrywanie grupy login jako klasa (lepsze niż style inline) */
+        .hidden {
+            display: none;
+        }
+
+        /* Special handling for reCAPTCHA - use visibility instead of display */
+        #recaptchaGroup.hidden {
+            display: block;
+            visibility: hidden;
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        #recaptchaGroup:not(.hidden) {
+            visibility: visible;
+            height: auto;
+            opacity: 1;
+        }
+    </style>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad" async defer></script>
+    <script>
+        // reCAPTCHA debugging
+        function onRecaptchaLoad() {
+            console.log('reCAPTCHA loaded successfully');
+            // Store that reCAPTCHA is loaded
+            window.recaptchaLoaded = true;
+        }
+
+        // Add callback for when reCAPTCHA is completed
+        function onRecaptchaCallback(response) {
+            console.log('reCAPTCHA completed, response length:', response.length);
+            // Store the response globally for debugging
+            window.lastRecaptchaResponse = response;
+        }
+
+        // Add callback for when reCAPTCHA expires
+        function onRecaptchaExpired() {
+            console.log('reCAPTCHA expired');
+            window.lastRecaptchaResponse = null;
+        }
+    </script>
+</head>
+<body>
+    <!-- Skip to main content link for screen readers -->
+    <a href="#main-content" class="skip-link">Przejdź do głównej zawartości</a>
+
+    <div class="featured-backdrop-log"></div>
+
+    <main id="main-content" class="auth-container" role="main">
+        <div class="auth-box">
+
+            <div class="auth-header">
+                <i data-lucide="film" class="auth-logo"></i>
+                <h2 class="auth-title-logo">WFO</h2>
+                <h1 class="auth-title">Witaj Ponownie</h1>
+                <p class="auth-subtitle">Zaloguj się do konta</p>
+            </div>
+
+            <form id="authForm" class="auth-form" novalidate>
+
+
+                <!-- Grupa login (dla rejestracji), ukryta na start -->
+                <div class="form-group hidden" id="nameGroup">
+                    <label for="login">Login</label>
+                    <div class="input-icon">
+                        <i data-lucide="user"></i>
+                        <input type="text" id="login" name="login" autocomplete="username" aria-describedby="login-error">
+                    </div>
+                    <div id="login-error" class="error-message" style="display: none;" role="alert" aria-live="polite"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <div class="input-icon">
+                        <i data-lucide="mail"></i>
+                        <input type="email" id="email" name="email" required autocomplete="email" aria-describedby="email-error">
+                    </div>
+                    <div id="email-error" class="error-message" style="display: none;" role="alert" aria-live="polite"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Hasło</label>
+                    <div class="input-icon">
+                        <i data-lucide="lock"></i>
+                        <input type="password" id="password" name="password" required autocomplete="current-password" aria-describedby="password-error password-requirements">
+                    </div>
+                    <div id="password-error" class="error-message" style="display: none;" role="alert" aria-live="polite"></div>
+                    <div id="password-requirements" class="sr-only">Hasło musi zawierać minimum 8 znaków, w tym jedną dużą literę, jedną małą literę oraz jedną cyfrę</div>
+                </div>
+
+                <!-- Google reCAPTCHA -->
+                <div class="form-group hidden" id="recaptchaGroup" aria-label="Weryfikacja reCAPTCHA">
+                    <div class="g-recaptcha"
+                         data-sitekey="6Lejx1UrAAAAAM0_WVUuazT48lk_bpyICn68s94V"
+                         data-callback="onRecaptchaCallback"
+                         data-expired-callback="onRecaptchaExpired"></div>
+                </div>
+
+                <div id="errorMessage" class="error-message" style="display: none;" role="alert" aria-live="assertive"></div>
+
+                <button type="submit" class="auth-submit">Zaloguj się</button>
+            </form>
+
+            <div class="auth-switch">
+                <button id="switchAuth" type="button" aria-describedby="switch-auth-description">
+                    Nie masz konta? Zarejestruj się!
+                </button>
+                <div id="switch-auth-description" class="sr-only">Przełącz między logowaniem a rejestracją</div>
+            </div>
+
+            <div class="auth-back">
+                <a href="index.php" class="back-link">
+                    <i data-lucide="arrow-left"></i>
+                    Powróć na stronę główną
+                </a>
+            </div>
+        </div>
+    </main>
+    <div id="toast" class="toast" style="display: none;" role="status" aria-live="polite"></div>
+    <script src="shared.js?v=<?= filemtime('shared.js') ?>"></script>
+    <script src="auth.js?v=<?= filemtime('auth.js') ?>"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,167 @@
+2025-07-30 21:50:43 - === SIMPLE WEBHOOK START ===
+2025-07-30 21:50:43 - Raw data received: {"transactionId":"ECeDkeLeePhGudEwCoQXdh4PZL6d1tCf","control":"6-4","email":"bres.maksymilian@wp.pl","amountPaid":9.99,"notificationAttempt":0,"paymentType":"TRANSFER","apiVersion":1,"signature":"b9474a6b66cbf04abdea75ec2ea2dfeaf7b911ca6c41e3c1e0952b241f977eaf"}
+2025-07-30 21:50:43 - Testing database connection...
+2025-07-30 21:50:43 - Database connection: OK
+2025-07-30 21:50:43 - Testing Platnosci table structure...
+2025-07-30 21:50:43 - Platnosci table columns:
+2025-07-30 21:50:43 -   - id (int(11))
+2025-07-30 21:50:43 -   - id_filmu (int(11))
+2025-07-30 21:50:43 -   - id_uzytkownika (int(11))
+2025-07-30 21:50:43 -   - id_transakcji (varchar(255))
+2025-07-30 21:50:43 -   - typ_platnosci (varchar(255))
+2025-07-30 21:50:43 - JSON decoded successfully
+2025-07-30 21:50:43 - TransactionId: ECeDkeLeePhGudEwCoQXdh4PZL6d1tCf
+2025-07-30 21:50:43 - Control: 6-4
+2025-07-30 21:50:43 - Email: bres.maksymilian@wp.pl
+2025-07-30 21:50:43 - Amount: 9.99
+2025-07-30 21:50:43 - Parsed userId: 6, movieId: 4
+2025-07-30 21:50:43 - Transaction is new - attempting insert
+2025-07-30 21:50:43 - Payment inserted successfully with ID: 58
+2025-07-30 21:50:43 - Subscription added successfully
+2025-07-30 21:50:43 - === SIMPLE WEBHOOK SUCCESS ===
+2025-07-30 21:50:43 - === SIMPLE WEBHOOK END ===
+2025-07-30 21:50:45 - === SIMPLE WEBHOOK START ===
+2025-07-30 21:50:45 - Raw data received: {"transactionId":"TMuNQ9mZI5ZdS7hxXJklO4EabsLaSWXo","control":"6-4","email":"bres.maksymilian@wp.pl","amountPaid":6,"notificationAttempt":7,"paymentType":"TRANSFER","apiVersion":1,"signature":"b866186ffae9543e6e78384634576aa3bdaeec60951e124867b4d1d80c984f73"}
+2025-07-30 21:50:45 - Testing database connection...
+2025-07-30 21:50:45 - Database connection: OK
+2025-07-30 21:50:45 - Testing Platnosci table structure...
+2025-07-30 21:50:45 - Platnosci table columns:
+2025-07-30 21:50:45 -   - id (int(11))
+2025-07-30 21:50:45 -   - id_filmu (int(11))
+2025-07-30 21:50:45 -   - id_uzytkownika (int(11))
+2025-07-30 21:50:45 -   - id_transakcji (varchar(255))
+2025-07-30 21:50:45 -   - typ_platnosci (varchar(255))
+2025-07-30 21:50:45 - JSON decoded successfully
+2025-07-30 21:50:45 - TransactionId: TMuNQ9mZI5ZdS7hxXJklO4EabsLaSWXo
+2025-07-30 21:50:45 - Control: 6-4
+2025-07-30 21:50:45 - Email: bres.maksymilian@wp.pl
+2025-07-30 21:50:45 - Amount: 6
+2025-07-30 21:50:45 - Parsed userId: 6, movieId: 4
+2025-07-30 21:50:45 - Transaction already exists - returning OK
+2025-07-30 21:50:46 - === SIMPLE WEBHOOK START ===
+2025-07-30 21:50:46 - Raw data received: {"transactionId":"g7Ari31k9rpHW7lXfUzHoDnCAgNVZrGy","control":"8-1","email":"5@5","amountPaid":19.99,"notificationAttempt":5,"paymentType":"TRANSFER","apiVersion":1,"signature":"d80de006efb3a99687fc2ebfb555f6270cd11315863e1abd55d00c34fc31a054"}
+2025-07-30 21:50:46 - Testing database connection...
+2025-07-30 21:50:46 - Database connection: OK
+2025-07-30 21:50:46 - Testing Platnosci table structure...
+2025-07-30 21:50:46 - Platnosci table columns:
+2025-07-30 21:50:46 -   - id (int(11))
+2025-07-30 21:50:46 -   - id_filmu (int(11))
+2025-07-30 21:50:46 -   - id_uzytkownika (int(11))
+2025-07-30 21:50:46 -   - id_transakcji (varchar(255))
+2025-07-30 21:50:46 -   - typ_platnosci (varchar(255))
+2025-07-30 21:50:46 - JSON decoded successfully
+2025-07-30 21:50:46 - TransactionId: g7Ari31k9rpHW7lXfUzHoDnCAgNVZrGy
+2025-07-30 21:50:46 - Control: 8-1
+2025-07-30 21:50:46 - Email: 5@5
+2025-07-30 21:50:46 - Amount: 19.99
+2025-07-30 21:50:46 - Parsed userId: 8, movieId: 1
+2025-07-30 21:50:46 - Transaction already exists - returning OK
+2025-07-30 21:50:55 - === SIMPLE WEBHOOK START ===
+2025-07-30 21:50:55 - Raw data received: {"transactionId":"FxqAUka1JOArAp0x1YiAtZcHhrpMV3Pi","control":"6-4","email":"bres.maksymilian@wp.pl","amountPaid":9.99,"notificationAttempt":3,"paymentType":"TRANSFER","apiVersion":1,"signature":"2544d6f835ad7e7aa981d115709b15f4e1741b408a5669dee1ce2f989f5bab80"}
+2025-07-30 21:50:55 - Testing database connection...
+2025-07-30 21:50:55 - Database connection: OK
+2025-07-30 21:50:55 - Testing Platnosci table structure...
+2025-07-30 21:50:55 - Platnosci table columns:
+2025-07-30 21:50:55 -   - id (int(11))
+2025-07-30 21:50:55 -   - id_filmu (int(11))
+2025-07-30 21:50:55 -   - id_uzytkownika (int(11))
+2025-07-30 21:50:55 -   - id_transakcji (varchar(255))
+2025-07-30 21:50:55 -   - typ_platnosci (varchar(255))
+2025-07-30 21:50:55 - JSON decoded successfully
+2025-07-30 21:50:55 - TransactionId: FxqAUka1JOArAp0x1YiAtZcHhrpMV3Pi
+2025-07-30 21:50:55 - Control: 6-4
+2025-07-30 21:50:55 - Email: bres.maksymilian@wp.pl
+2025-07-30 21:50:55 - Amount: 9.99
+2025-07-30 21:50:55 - Parsed userId: 6, movieId: 4
+2025-07-30 21:50:55 - Transaction already exists - returning OK
+2025-07-30 21:51:36 - === SIMPLE WEBHOOK START ===
+2025-07-30 21:51:36 - Raw data received: {"transactionId":"vSdowAyh9PGyg99EfiaDCWYDV6EtAtDL","control":"6-4","email":"bres.maksymilian@wp.pl","amountPaid":6,"notificationAttempt":11,"paymentType":"TRANSFER","apiVersion":1,"signature":"c224ef3231aa9248b8438886a80cc45a05efabb19064e9ddbab078f3f8b30efd"}
+2025-07-30 21:51:36 - Testing database connection...
+2025-07-30 21:51:36 - === SIMPLE WEBHOOK START ===
+2025-07-30 21:51:36 - Raw data received: {"transactionId":"jvUeXpOMbciLtHwo0iU7DBRkoZwFaaXJ","control":"6-4","email":"bres.maksymilian@wp.pl","amountPaid":9.99,"notificationAttempt":4,"paymentType":"TRANSFER","apiVersion":1,"signature":"c082aeb1ccdfb068dee15e2c15916ee630b25b778d42f1c9cf158be409917518"}
+2025-07-30 21:51:36 - Testing database connection...
+2025-07-30 21:51:36 - Database connection: OK
+2025-07-30 21:51:36 - Database connection: OK
+2025-07-30 21:51:36 - Testing Platnosci table structure...
+2025-07-30 21:51:36 - Testing Platnosci table structure...
+2025-07-30 21:51:36 - Platnosci table columns:
+2025-07-30 21:51:36 -   - id (int(11))
+2025-07-30 21:51:36 -   - id_filmu (int(11))
+2025-07-30 21:51:36 -   - id_uzytkownika (int(11))
+2025-07-30 21:51:36 -   - id_transakcji (varchar(255))
+2025-07-30 21:51:36 -   - typ_platnosci (varchar(255))
+2025-07-30 21:51:36 - JSON decoded successfully
+2025-07-30 21:51:36 - TransactionId: jvUeXpOMbciLtHwo0iU7DBRkoZwFaaXJ
+2025-07-30 21:51:36 - Control: 6-4
+2025-07-30 21:51:36 - Email: bres.maksymilian@wp.pl
+2025-07-30 21:51:36 - Amount: 9.99
+2025-07-30 21:51:36 - Parsed userId: 6, movieId: 4
+2025-07-30 21:51:36 - Platnosci table columns:
+2025-07-30 21:51:36 -   - id (int(11))
+2025-07-30 21:51:36 -   - id_filmu (int(11))
+2025-07-30 21:51:36 -   - id_uzytkownika (int(11))
+2025-07-30 21:51:36 -   - id_transakcji (varchar(255))
+2025-07-30 21:51:36 -   - typ_platnosci (varchar(255))
+2025-07-30 21:51:36 - JSON decoded successfully
+2025-07-30 21:51:36 - TransactionId: vSdowAyh9PGyg99EfiaDCWYDV6EtAtDL
+2025-07-30 21:51:36 - Control: 6-4
+2025-07-30 21:51:36 - Email: bres.maksymilian@wp.pl
+2025-07-30 21:51:36 - Amount: 6
+2025-07-30 21:51:36 - Parsed userId: 6, movieId: 4
+2025-07-30 21:51:36 - Transaction already exists - returning OK
+2025-07-30 21:51:36 - Transaction already exists - returning OK
+2025-07-30 21:51:46 - === SIMPLE WEBHOOK START ===
+2025-07-30 21:51:46 - Raw data received: {"transactionId":"Bv782DSduGHTZHpUmkE4UW8ghs1RDjjL","control":"8-3","email":"a@a","amountPaid":6,"notificationAttempt":13,"paymentType":"TRANSFER","apiVersion":1,"signature":"f00956e8b204f73dfd0844129fc904bdb251175a3e6bb17c26425578e96fee4f"}
+2025-07-30 21:51:46 - Testing database connection...
+2025-07-30 21:51:46 - Database connection: OK
+2025-07-30 21:51:46 - Testing Platnosci table structure...
+2025-07-30 21:51:46 - Platnosci table columns:
+2025-07-30 21:51:46 -   - id (int(11))
+2025-07-30 21:51:46 -   - id_filmu (int(11))
+2025-07-30 21:51:46 -   - id_uzytkownika (int(11))
+2025-07-30 21:51:46 -   - id_transakcji (varchar(255))
+2025-07-30 21:51:46 -   - typ_platnosci (varchar(255))
+2025-07-30 21:51:46 - JSON decoded successfully
+2025-07-30 21:51:46 - TransactionId: Bv782DSduGHTZHpUmkE4UW8ghs1RDjjL
+2025-07-30 21:51:46 - Control: 8-3
+2025-07-30 21:51:46 - Email: a@a
+2025-07-30 21:51:46 - Amount: 6
+2025-07-30 21:51:46 - Parsed userId: 8, movieId: 3
+2025-07-30 21:51:46 - Transaction already exists - returning OK
+2025-07-30 21:52:36 - === SIMPLE WEBHOOK START ===
+2025-07-30 21:52:36 - Raw data received: {"transactionId":"Nn9SpsUUSgv8wxgvOC2clulsl7syay7D","control":"6-4","email":"bres.maksymilian@wp.pl","amountPaid":9.99,"notificationAttempt":4,"paymentType":"TRANSFER","apiVersion":1,"signature":"e1eb2080335e5562f2aee59530ad83343a435dc9306b697fd36e33c2e066cf5a"}
+2025-07-30 21:52:36 - Testing database connection...
+2025-07-30 21:52:36 - Database connection: OK
+2025-07-30 21:52:36 - Testing Platnosci table structure...
+2025-07-30 21:52:36 - Platnosci table columns:
+2025-07-30 21:52:36 -   - id (int(11))
+2025-07-30 21:52:36 -   - id_filmu (int(11))
+2025-07-30 21:52:36 -   - id_uzytkownika (int(11))
+2025-07-30 21:52:36 -   - id_transakcji (varchar(255))
+2025-07-30 21:52:36 -   - typ_platnosci (varchar(255))
+2025-07-30 21:52:36 - JSON decoded successfully
+2025-07-30 21:52:36 - TransactionId: Nn9SpsUUSgv8wxgvOC2clulsl7syay7D
+2025-07-30 21:52:36 - Control: 6-4
+2025-07-30 21:52:36 - Email: bres.maksymilian@wp.pl
+2025-07-30 21:52:36 - Amount: 9.99
+2025-07-30 21:52:36 - Parsed userId: 6, movieId: 4
+2025-07-30 21:52:36 - Transaction already exists - returning OK
+2025-07-30 21:53:26 - === SIMPLE WEBHOOK START ===
+2025-07-30 21:53:26 - Raw data received: {"transactionId":"LEvf5BDRZZSiYFNs6xn6VIHCbUVzsBiA","control":"8-3","email":"a@a","amountPaid":6,"notificationAttempt":13,"paymentType":"TRANSFER","apiVersion":1,"signature":"40ecba17f84592fa7f708a068e6d87854ae686e234462b225c6179e665dd05b8"}
+2025-07-30 21:53:26 - Testing database connection...
+2025-07-30 21:53:26 - Database connection: OK
+2025-07-30 21:53:26 - Testing Platnosci table structure...
+2025-07-30 21:53:26 - Platnosci table columns:
+2025-07-30 21:53:26 -   - id (int(11))
+2025-07-30 21:53:26 -   - id_filmu (int(11))
+2025-07-30 21:53:26 -   - id_uzytkownika (int(11))
+2025-07-30 21:53:26 -   - id_transakcji (varchar(255))
+2025-07-30 21:53:26 -   - typ_platnosci (varchar(255))
+2025-07-30 21:53:26 -   - status (varchar(50))
+2025-07-30 21:53:26 - JSON decoded successfully
+2025-07-30 21:53:26 - TransactionId: LEvf5BDRZZSiYFNs6xn6VIHCbUVzsBiA
+2025-07-30 21:53:26 - Control: 8-3
+2025-07-30 21:53:26 - Email: a@a
+2025-07-30 21:53:26 - Amount: 6
+2025-07-30 21:53:26 - Parsed userId: 8, movieId: 3
+2025-07-30 21:53:26 - Transaction already exists - returning OK
