@@ -184,8 +184,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('🎬 Available movies count:', moviesArray.length);
         console.log('🎬 Looking for movie with ID:', movieId);
 
-        // Find movie in our movies array
-        const movie = moviesArray[parseInt(movieId)];
+        // Find movie in our movies array by database ID
+        const movie = moviesArray.find(m => m.id === parseInt(movieId));
         console.log('🎬 Movie details:', movie);
 
         if (movie) {
@@ -399,9 +399,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 purchaseButton.addEventListener('click', () => {
                   console.log('💸 Purchase button clicked');
                   
-                  // Get the actual database ID from the movie data
-                  const actualMovieId = movie.id; // This is the database ID
-                  console.log('Using database movie ID:', actualMovieId);
+                  // Use the movieId from URL which is already the database ID
+                  console.log('Using database movie ID:', movieId);
                   
                   // Create form and submit to startPaymentExample.php
                   const form = document.createElement('form');
@@ -412,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   const movieIdInput = document.createElement('input');
                   movieIdInput.type = 'hidden';
                   movieIdInput.name = 'movieId';
-                  movieIdInput.value = actualMovieId;
+                  movieIdInput.value = movieId;
                   form.appendChild(movieIdInput);
 
                   document.body.appendChild(form);
@@ -427,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           // Show error message if movie not found
           console.log('❌ Movie not found for ID:', movieId);
-          console.log('Available movie IDs:', moviesArray.map((m, index) => index));
+          console.log('Available movie IDs:', moviesArray.map(m => m.id));
           const videoWrapper = document.querySelector('.video-player');
           videoWrapper.innerHTML = `
                 <div class="video-unavailable" style="text-align: center; padding: 60px 20px; color: #fff; background: #1a1a1a; border-radius: 10px;" role="alert" aria-live="assertive">

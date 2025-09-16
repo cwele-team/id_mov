@@ -344,9 +344,9 @@ function showSearchDropdown(searchTerm, searchResults) {
                 ${searchResults.map((movie) => {
                     // Find the original index in the global movies array if it exists
                     // This is important for setupMovieOverlay to work correctly
-                    const originalIndex = window.movies ? window.movies.findIndex(m => m.id === movie.id) : -1;
+                    const movieDbId = movie.id;
                     return `
-                        <div class="search-result-item" data-movie-id="${originalIndex !== -1 ? originalIndex : movie.id}" data-movie-db-id="${movie.id}" role="option" tabindex="0" aria-label="Film ${movie.title}, ${movie.year}, ocena ${movie.rating}" style="border: 2px solid transparent; transition: border-color 0.2s ease;">
+                        <div class="search-result-item" data-movie-id="${movieDbId}" data-movie-db-id="${movieDbId}" role="option" tabindex="0" aria-label="Film ${movie.title}, ${movie.year}, ocena ${movie.rating}" style="border: 2px solid transparent; transition: border-color 0.2s ease;">
                             <img src="${movie.imageUrl}" alt="Plakat filmu ${movie.title}" class="search-result-poster">
                             <div class="search-result-info">
                                 <h4 class="search-result-title">${movie.title}</h4>
@@ -389,7 +389,6 @@ function showSearchDropdown(searchTerm, searchResults) {
             });
 
             const handleItemActivation = () => {
-                const movieId = parseInt(item.dataset.movieId); // This is the index in window.movies
                 const movieDbId = parseInt(item.dataset.movieDbId); // This is the actual DB ID
 
                 // Clear search results and form
@@ -401,7 +400,7 @@ function showSearchDropdown(searchTerm, searchResults) {
 
                 // Trigger movie overlay if setupMovieOverlay function exists and we have movies
                 // Use the movie object directly from searchResults if window.movies is not fully loaded or doesn't contain it
-                const movieData = window.movies && window.movies[movieId] && window.movies[movieId].id === movieDbId ? window.movies[movieId] : searchResults.find(m => m.id === movieDbId);
+                const movieData = window.movies ? window.movies.find(m => m.id === movieDbId) : searchResults.find(m => m.id === movieDbId);
 
                 if (typeof setupMovieOverlay === 'function' && movieData) {
                     // Remove existing overlay if present
@@ -411,7 +410,7 @@ function showSearchDropdown(searchTerm, searchResults) {
                     }
 
                     // Create overlay directly
-                    const inWatchlist = typeof isInWatchlist === 'function' ? isInWatchlist(movieId) : false; // Use original index for watchlist check
+                    const inWatchlist = typeof isInWatchlist === 'function' ? isInWatchlist(movieDbId) : false;
 
                     const overlay = document.createElement('div');
                     overlay.className = 'movie-details-overlay';
@@ -420,7 +419,7 @@ function showSearchDropdown(searchTerm, searchResults) {
                     overlay.setAttribute('aria-labelledby', 'search-movie-details-title');
 
                     overlay.innerHTML = `
-                        <div class="movie-details-content" data-movie-id="${movieId}" data-movie-db-id="${movieDbId}">
+                        <div class="movie-details-content" data-movie-id="${movieDbId}" data-movie-db-id="${movieDbId}">
                             <button class="movie-details-close" aria-label="Zamknij szczegóły filmu">
                                 <i data-lucide="x"></i>
                             </button>
@@ -437,7 +436,7 @@ function showSearchDropdown(searchTerm, searchResults) {
                                     </div>
                                     <p class="movie-details-description">${movieData.description}</p>
                                     <div class="movie-details-actions">
-                                        <a href="player.php?id=${movieId}" class="btn btn-primary play-button" aria-label="Odtwórz film ${movieData.title}">
+                                        <a href="player.php?id=${movieDbId}" class="btn btn-primary play-button" aria-label="Odtwórz film ${movieData.title}">
                                             <i data-lucide="play"></i>
                                             <span>Odtwórz film</span>
                                         </a>
@@ -501,14 +500,13 @@ function showSearchDropdown(searchTerm, searchResults) {
                     if (watchlistButton && typeof addToWatchlist === 'function' && typeof removeFromWatchlist === 'function') {
                         watchlistButton.onclick = async (e) => {
                             e.preventDefault();
-                            // Use the original index for watchlist functions
-                            if (await isInWatchlist(movieId)) {
-                                await removeFromWatchlist(movieId);
+                            if (await isInWatchlist(movieDbId)) {
+                                await removeFromWatchlist(movieDbId);
                             } else {
-                                await addToWatchlist(movieId);
+                                await addToWatchlist(movieDbId);
                             }
                             // Re-render the button state after action
-                            const updatedInWatchlist = await isInWatchlist(movieId);
+                            const updatedInWatchlist = await isInWatchlist(movieDbId);
                             watchlistButton.className = `btn ${updatedInWatchlist ? 'btn-primary' : 'btn-secondary'} watchlist-button`;
                             watchlistButton.setAttribute('aria-label', updatedInWatchlist ? 'Usuń z listy do obejrzenia' : 'Dodaj do listy do obejrzenia');
                             watchlistButton.innerHTML = `
@@ -524,7 +522,7 @@ function showSearchDropdown(searchTerm, searchResults) {
                     }
                 } else {
                     // Redirect to player page if overlay not available or movieData is missing
-                    window.location.href = `player.php?id=${movieId}`;
+                    window.location.href = `player.php?id=${movieDbId}`;
                 }
             };
 

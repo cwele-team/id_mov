@@ -152,10 +152,14 @@ async function ensureCategoriesLoaded() {
         if (!response.ok) throw new Error('Failed to fetch watchlist');
         const data = await response.json();
 
-        // Convert watchlist data to movie objects
-        const watchlistMovies = data.watchlist.map(item => {
-          return movies.find(movie => movie.title === item.movie_title);
-        }).filter(movie => movie !== undefined);
+        // Convert watchlist data to movie objects using database IDs
+        const watchlistMovies = [];
+        for (const item of data.watchlist) {
+          const movie = movies.find(m => m.title === item.movie_title);
+          if (movie) {
+            watchlistMovies.push(movie);
+          }
+        }
 
         return watchlistMovies;
       } catch (error) {
@@ -164,7 +168,7 @@ async function ensureCategoriesLoaded() {
       }
     }
 
-    async function addToWatchlist(movieId) {
+    async function addToWatchlist(movieDbId) {
       const currentUser = session.get();
       if (!currentUser) {
         window.location.href = 'Logowanie.php?returnUrl=' + encodeURIComponent(window.location.pathname);
@@ -178,7 +182,7 @@ async function ensureCategoriesLoaded() {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            movieTitle: movies[movieId].title
+            movieId: movieDbId
           })
         });
 
@@ -191,7 +195,7 @@ async function ensureCategoriesLoaded() {
       }
     }
 
-    async function removeFromWatchlist(movieId) {
+    async function removeFromWatchlist(movieDbId) {
       try {
         const response = await fetch('watchlist.php?action=remove', {
           method: 'POST',
@@ -199,7 +203,7 @@ async function ensureCategoriesLoaded() {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            movieTitle: movies[movieId].title
+            movieId: movieDbId
           })
         });
 
@@ -212,9 +216,9 @@ async function ensureCategoriesLoaded() {
       }
     }
 
-    async function isInWatchlist(movieId) {
+    async function isInWatchlist(movieDbId) {
       const watchlist = await getWatchlist();
-      return watchlist.some(movie => movie.title === movies[movieId].title);
+      return watchlist.some(movie => movie.id === movieDbId);
     }
 
     // Debug function to check watchlist status
@@ -246,8 +250,7 @@ async function ensureCategoriesLoaded() {
           watchlistContainer.innerHTML = '<div class="empty-watchlist">Twoja lista do obejrzenia jest pusta</div>';
         } else {
           watchlistContainer.innerHTML = watchlist.map((movie) => {
-            const originalIndex = movies.findIndex(m => m.title === movie.title);
-            return createMovieCard(movie, originalIndex);
+            return createMovieCard(movie, movie.id);
           }).join('');
         }
       } else {
@@ -261,7 +264,7 @@ async function ensureCategoriesLoaded() {
 
       // Update any open movie overlay
       if (currentOverlay) {
-        const movieId = parseInt(currentOverlay.querySelector('.movie-details-content').dataset.movieId);
+        const movieId = parseInt(currentOverlay.querySelector('.movie-details-content').dataset.movieDbId);
         const watchlistButton = currentOverlay.querySelector('.watchlist-button');
         const inWatchlist = await isInWatchlist(movieId);
 
@@ -286,7 +289,7 @@ async function ensureCategoriesLoaded() {
       const watchlistText = 'Dodaj do listy';
 
       return `
-        <div class="movie-card" data-movie-id="${index}" data-movie-db-id="${movie.id}" tabindex="0" role="button" aria-label="Otwórz szczegóły filmu ${movie.title}">
+        <div class="movie-card" data-movie-id="${movie.id}" data-movie-db-id="${movie.id}" tabindex="0" role="button" aria-label="Otwórz szczegóły filmu ${movie.title}">
           <img src="${movie.imageUrl}" alt="Plakat filmu ${movie.title}">
           <div class="movie-card-overlay"></div>
           <span class="movie-category">${primaryCategory}</span>
@@ -336,20 +339,19 @@ async function ensureCategoriesLoaded() {
         }
       }
 
-      moviesGrid.innerHTML = moviesToShow.map((movie, index) => {
-        const originalIndex = movies.findIndex(m => m.title === movie.title);
-        return createMovieCard(movie, originalIndex);
+      moviesGrid.innerHTML = moviesToShow.map((movie) => {
+        return createMovieCard(movie, movie.id);
       }).join('');
 
       setupMovieOverlay();
     }
 
     // Store the current featured movie index
-    let currentFeaturedMovieIndex = null;
+    let currentFeaturedMovieId = null;
 
     // Update featured movie button
     async function updateFeaturedMovieButton() {
-      if (currentFeaturedMovieIndex === null) return;
+      if (currentFeaturedMovieId === null) return;
 
       // Look for the button by finding it properly - it might have different classes after update
       const featuredMovie = document.querySelector('.featured-movie');
@@ -357,7 +359,7 @@ async function ensureCategoriesLoaded() {
 
       const featuredWatchlistButton = featuredMovie.querySelector('.action-buttons .btn:not(.btn-primary[href])');
       if (featuredWatchlistButton) {
-        const inWatchlist = await isInWatchlist(currentFeaturedMovieIndex);
+        const inWatchlist = await isInWatchlist(currentFeaturedMovieId);
 
         // Update class and content
         featuredWatchlistButton.className = `btn ${inWatchlist ? 'btn-primary' : 'btn-secondary'}`;
@@ -377,14 +379,14 @@ async function ensureCategoriesLoaded() {
         // Add new click handler
         newButton.onclick = async (e) => {
           e.preventDefault();
-          console.log('Featured movie watchlist button clicked, current state:', await isInWatchlist(currentFeaturedMovieIndex));
-          if (await isInWatchlist(currentFeaturedMovieIndex)) {
-            if (await removeFromWatchlist(currentFeaturedMovieIndex)) {
+          console.log('Featured movie watchlist button clicked, current state:', await isInWatchlist(currentFeaturedMovieId));
+          if (await isInWatchlist(currentFeaturedMovieId)) {
+            if (await removeFromWatchlist(currentFeaturedMovieId)) {
               await updateFeaturedMovieButton();
               await updateWatchlistUI();
             }
           } else {
-            if (await addToWatchlist(currentFeaturedMovieIndex)) {
+            if (await addToWatchlist(currentFeaturedMovieId)) {
               await updateFeaturedMovieButton();
               await updateWatchlistUI();
             }
@@ -405,12 +407,21 @@ async function ensureCategoriesLoaded() {
       }
 
       // Only set a new random movie if we don't have one yet
-      if (currentFeaturedMovieIndex === null) {
-        currentFeaturedMovieIndex = Math.floor(Math.random() * movies.length);
+      if (currentFeaturedMovieId === null) {
+        const randomIndex = Math.floor(Math.random() * movies.length);
+        currentFeaturedMovieId = movies[randomIndex].id;
       }
 
-      const randomMovie = movies[currentFeaturedMovieIndex];
-      const inWatchlist = await isInWatchlist(currentFeaturedMovieIndex);
+      const randomMovie = movies.find(m => m.id === currentFeaturedMovieId);
+      if (!randomMovie) {
+        // Fallback if movie not found
+        const randomIndex = Math.floor(Math.random() * movies.length);
+        currentFeaturedMovieId = movies[randomIndex].id;
+        const fallbackMovie = movies[randomIndex];
+        return initializeFeaturedMovie(); // Retry with new movie
+      }
+      
+      const inWatchlist = await isInWatchlist(currentFeaturedMovieId);
 
       featuredMovie.querySelector('.featured-backdrop').style.backgroundImage = `url(${randomMovie.imageUrl})`;
       featuredMovie.querySelector('.featured-backdrop').setAttribute('aria-hidden', 'true');
@@ -423,9 +434,9 @@ async function ensureCategoriesLoaded() {
       // Update play button link
       const playButton = featuredMovie.querySelector('.btn-primary');
       if (playButton) {
-        playButton.href = `player.php?id=${currentFeaturedMovieIndex}`;
+        playButton.href = `player.php?id=${currentFeaturedMovieId}`;
         playButton.setAttribute('aria-label', `Odtwórz film ${randomMovie.title}`);
-        console.log('🎬 Featured movie play button link:', playButton.href);
+        console.log('🎬 Featured movie play button link (DB ID):', playButton.href);
       }
 
       // Update watchlist button - find the second button (not the play button)
@@ -445,14 +456,14 @@ async function ensureCategoriesLoaded() {
         // Add click handler
         watchlistButton.onclick = async (e) => {
           e.preventDefault();
-          console.log('Featured movie button clicked - current watchlist state:', await isInWatchlist(currentFeaturedMovieIndex));
-          if (await isInWatchlist(currentFeaturedMovieIndex)) {
-            if (await removeFromWatchlist(currentFeaturedMovieIndex)) {
+          console.log('Featured movie button clicked - current watchlist state:', await isInWatchlist(currentFeaturedMovieId));
+          if (await isInWatchlist(currentFeaturedMovieId)) {
+            if (await removeFromWatchlist(currentFeaturedMovieId)) {
               await updateFeaturedMovieButton();
               await updateWatchlistUI();
             }
           } else {
-            if (await addToWatchlist(currentFeaturedMovieIndex)) {
+            if (await addToWatchlist(currentFeaturedMovieId)) {
               await updateFeaturedMovieButton();
               await updateWatchlistUI();
             }
@@ -849,8 +860,7 @@ async function ensureCategoriesLoaded() {
         noResults.style.display = 'none';
         
         movieGrid.innerHTML = moviesToDisplay.map((movie) => {
-          const originalIndex = movies.findIndex(m => m.title === movie.title);
-          return createMovieCard(movie, originalIndex);
+          return createMovieCard(movie, movie.id);
         }).join('');
       }
       
@@ -926,7 +936,7 @@ async function ensureCategoriesLoaded() {
 
       if (recommendedMovies) {
         if (movies.length > 0) {
-          recommendedMovies.innerHTML = movies.map((movie, index) => createMovieCard(movie, index)).join('');
+          recommendedMovies.innerHTML = movies.map((movie) => createMovieCard(movie, movie.id)).join('');
         } else {
           recommendedMovies.innerHTML = '<div class="empty-section">Brak dostępnych filmów</div>';
         }
@@ -1007,9 +1017,8 @@ async function ensureCategoriesLoaded() {
               <a href="Kategorie.php?category=${encodeURIComponent(categoryName)}" class="view-all">Zobacz wszystkie</a>
             </div>
             <div class="movie-row" role="list" aria-label="Filmy z kategorii ${categoryName}">
-              ${categoryMovies.map((movie, index) => {
-                const originalIndex = movies.findIndex(m => m.title === movie.title);
-                return createMovieCard(movie, originalIndex);
+              ${categoryMovies.map((movie) => {
+                return createMovieCard(movie, movie.id);
               }).join('')}
             </div>
           `;
@@ -1022,8 +1031,8 @@ async function ensureCategoriesLoaded() {
     let currentOverlay = null;
 
     // Movie details overlay
-    async function updateOverlayButton(movieId, overlay) {
-      const inWatchlist = await isInWatchlist(movieId);
+    async function updateOverlayButton(movieDbId, overlay) {
+      const inWatchlist = await isInWatchlist(movieDbId);
       const watchlistButton = overlay.querySelector('.watchlist-button');
 
       if (watchlistButton) {
@@ -1056,13 +1065,19 @@ async function ensureCategoriesLoaded() {
           overlay.setAttribute('aria-modal', 'true');
           overlay.setAttribute('aria-labelledby', 'movie-details-title');
 
-          const movieId = parseInt(card.dataset.movieId);
+          const movieDbId = parseInt(card.dataset.movieDbId);
           const movieData = movies[movieId];
-          const movieDbId = movieData.id; // Get the actual database ID
-          const inWatchlist = await isInWatchlist(movieId);
+          const movieData = movies.find(m => m.id === movieDbId);
+          
+          if (!movieData) {
+            console.error('Movie data not found for ID:', movieDbId);
+            return;
+          }
+          
+          const inWatchlist = await isInWatchlist(movieDbId);
 
           overlay.innerHTML = `
-            <div class="movie-details-content" data-movie-id="${movieId}" data-movie-db-id="${movieDbId}">
+            <div class="movie-details-content" data-movie-id="${movieDbId}" data-movie-db-id="${movieDbId}">
               <button class="movie-details-close" aria-label="Zamknij szczegóły filmu">
                 <i data-lucide="x"></i>
               </button>
@@ -1081,7 +1096,7 @@ async function ensureCategoriesLoaded() {
                   </div>
                   <p class="movie-details-description">${movieData.description}</p>
                   <div class="movie-details-actions">
-                    <a href="player.php?id=${movieId}" class="btn btn-primary play-button" aria-label="Odtwórz film ${movieData.title}">
+                    <a href="player.php?id=${movieDbId}" class="btn btn-primary play-button" aria-label="Odtwórz film ${movieData.title}">
                       <i data-lucide="play"></i>
                       <span>Odtwórz film</span>
                     </a>
@@ -1149,15 +1164,15 @@ async function ensureCategoriesLoaded() {
             watchlistButton.onclick = async (e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log('Overlay watchlist button clicked for movie:', movieId);
-              if (await isInWatchlist(movieId)) {
-                if (await removeFromWatchlist(movieId)) {
-                  await updateOverlayButton(movieId, overlay);
+              console.log('Overlay watchlist button clicked for movie:', movieDbId);
+              if (await isInWatchlist(movieDbId)) {
+                if (await removeFromWatchlist(movieDbId)) {
+                  await updateOverlayButton(movieDbId, overlay);
                   await updateWatchlistUI();
                 }
               } else {
-                if (await addToWatchlist(movieId)) {
-                  await updateOverlayButton(movieId, overlay);
+                if (await addToWatchlist(movieDbId)) {
+                  await updateOverlayButton(movieDbId, overlay);
                   await updateWatchlistUI();
                 }
               }

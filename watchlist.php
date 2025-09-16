@@ -54,61 +54,82 @@ switch ($action) {
 
     case 'add':
         $data = json_decode(file_get_contents('php://input'), true);
-        $movieTitle = $data['movieTitle'] ?? '';
+        $movieId = $data['movieId'] ?? '';
+        $movieTitle = $data['movieTitle'] ?? ''; // Keep for backward compatibility
 
-        if (!$movieTitle) {
+        if ($movieId) {
+            // Use movie ID directly if provided
+            $stmt = $conn->prepare("SELECT id FROM Filmy WHERE id = ?");
+            $stmt->bind_param("i", $movieId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($movie = $result->fetch_assoc()) {
+                $movieIdToUse = $movie['id'];
+            } else {
+                http_response_code(404);
+                echo json_encode(['error' => 'Movie not found']);
+                exit;
+            }
+        } elseif ($movieTitle) {
+            // Fallback to title-based lookup for backward compatibility
+            $stmt = $conn->prepare("SELECT id FROM Filmy WHERE tytul = ?");
+            $stmt->bind_param("s", $movieTitle);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($movie = $result->fetch_assoc()) {
+                $movieIdToUse = $movie['id'];
+            } else {
+                http_response_code(404);
+                echo json_encode(['error' => 'Movie not found']);
+                exit;
+            }
+        } else {
             http_response_code(400);
-            echo json_encode(['error' => 'Movie title is required']);
+            echo json_encode(['error' => 'Movie ID or title is required']);
             exit;
         }
 
-        // Znajdź ID filmu na podstawie tytułu
-        $stmt = $conn->prepare("SELECT id FROM Filmy WHERE tytul = ?");
-        $stmt->bind_param("s", $movieTitle);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        // Dodaj do watchlisty
+        $stmt = $conn->prepare("INSERT INTO Watchlist (id_uzytkownika, id_filmu) VALUES (?, ?)");
+        $stmt->bind_param("ii", $userId, $movieIdToUse);
 
-        if ($movie = $result->fetch_assoc()) {
-            $movieId = $movie['id'];
-
-            // Dodaj do watchlisty
-            $stmt = $conn->prepare("INSERT INTO Watchlist (id_uzytkownika, id_filmu) VALUES (?, ?)");
-            $stmt->bind_param("ii", $userId, $movieId);
-
-            if ($stmt->execute()) {
-                echo json_encode(['success' => true]);
-            } else {
-                if ($conn->errno === 1062) { // Duplicate entry
-                    http_response_code(409);
-                    echo json_encode(['error' => 'Movie already in watchlist']);
-                } else {
-                    http_response_code(500);
-                    echo json_encode(['error' => 'Failed to add movie to watchlist']);
-                }
-            }
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true]);
         } else {
-            http_response_code(404);
-            echo json_encode(['error' => 'Movie not found']);
+            if ($conn->errno === 1062) { // Duplicate entry
+                http_response_code(409);
+                echo json_encode(['error' => 'Movie already in watchlist']);
+            } else {
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to add movie to watchlist']);
+            }
         }
         break;
 
     case 'remove':
         $data = json_decode(file_get_contents('php://input'), true);
-        $movieTitle = $data['movieTitle'] ?? '';
+        $movieId = $data['movieId'] ?? '';
+        $movieTitle = $data['movieTitle'] ?? ''; // Keep for backward compatibility
 
-        if (!$movieTitle) {
+        if ($movieId) {
+            // Use movie ID directly if provided
+            $stmt = $conn->prepare("DELETE FROM Watchlist WHERE id_uzytkownika = ? AND id_filmu = ?");
+            $stmt->bind_param("ii", $userId, $movieId);
+        } elseif ($movieTitle) {
+            // Fallback to title-based removal for backward compatibility
+            $stmt = $conn->prepare("
+                DELETE w FROM Watchlist w
+                JOIN Filmy f ON w.id_filmu = f.id
+                WHERE w.id_uzytkownika = ? AND f.tytul = ?
+            ");
+            $stmt->bind_param("is", $userId, $movieTitle);
+        } else {
             http_response_code(400);
-            echo json_encode(['error' => 'Movie title is required']);
+            echo json_encode(['error' => 'Movie ID or title is required']);
             exit;
         }
-
-        // Znajdź ID filmu na podstawie tytułu i usuń z watchlisty
-        $stmt = $conn->prepare("
-            DELETE w FROM Watchlist w
-            JOIN Filmy f ON w.id_filmu = f.id
-            WHERE w.id_uzytkownika = ? AND f.tytul = ?
-        ");
-        $stmt->bind_param("is", $userId, $movieTitle);
 
         if ($stmt->execute()) {
             echo json_encode(['success' => true]);
